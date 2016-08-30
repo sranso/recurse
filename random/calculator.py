@@ -37,12 +37,14 @@ class Calculator:
         calculation = input('What would you like to compute?\n')
         parsed = self.parse(calculation)
         if parsed:
-            print(parsed)
+            print('parsed ast', self.ast)
             answer = self.calculate()
-            print(answer)
+            print('answer', answer)
+            self.ast = []
             self.listen()
         elif calculation.lower() == 'help':
             print(self.instructions)
+            self.listen()
         elif calculation.lower() == 'exit':
             print('Good work team')
         else:
@@ -52,33 +54,39 @@ class Calculator:
         i = 0
         operands = []
         operator = ''
+        number = ''
         while i < len(calculation): 
             c = calculation[i]
             if self.is_number(c):
-                operands.append(int(c))
+                number += c
+                if i == len(calculation) - 1:
+                    operands.append(int(number))
                 if len(operands) >= 2 and len(operator) == 1:
                     self.ast = [operator, operands]
                     operands = []
                     operator = ''
             elif c in self.operators:
                 operator = c
+                if len(number) >= 1:
+                    operands.append(int(number))
+                    number = ''
             elif c.isspace():
                 continue
             else:
                 return False
             i += 1
-        return self.ast
+        return True
 
     def calculate(self):
         answer = 0
         for index, step in enumerate(self.ast):
-            #pdb.set_trace()
             if type(step) is list:
-                print('hi')
+                print('step: list', index)
             elif step in self.operators:
+                print('step: operator', index)
                 answer = self.operators[step](self.ast[index+1])
             elif type(step) is int:
-                print('hi')
+                print('step: int', index)
         return answer
 
 if __name__ == '__main__':
