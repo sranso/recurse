@@ -1,6 +1,7 @@
 import sys
 import unittest
 import io
+import pdb
 
 class Brainfuck:
     def __init__(self, code, stdin=sys.stdin, stdout=sys.stdout):
@@ -11,7 +12,16 @@ class Brainfuck:
         self.tape_size = 40
         self.tape = [0]*self.tape_size
         self.pointer = 0
-        self.commands = {'+': self.plus, '-': self.minus, '<': self.left, '>': self.right, '[': self.start, ']': self.end, '.': self.out, ',': self.read}
+        self.commands = {
+                '+': self.plus,
+                '-': self.minus,
+                '<': self.left,
+                '>': self.right,
+                '[': self.start,
+                ']': self.end,
+                '.': self.out,
+                ',': self.read
+        }
 
     def __str__(self):
         res = ''
@@ -92,15 +102,15 @@ class Brainfuck:
         self.tape[self.pointer] = ord(self.stdin.read(1))
 
     def execute(self):
-        code = list(self.code)
-        # parse
+        code = self.code
+        # here is where we'd parse
         self.stdout.write(code)
         while self.index_in_code < len(self.code):
             command = code[self.index_in_code]
             if command in self.commands:
                 self.run(command)
             self.index_in_code += 1
-            self.stdout.write(self)
+            self.stdout.write(self.code)
 
 if __name__ == '__main__':
     # To run: echo ',.+[]' > fileWithCode.py; python brainfuck.py fileWithCode.py
@@ -108,6 +118,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         with open(sys.argv[1], 'r') as f:
             code = f.read()
+    print(code)
     b = Brainfuck(code)
     b.execute()
 
