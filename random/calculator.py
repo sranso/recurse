@@ -22,17 +22,17 @@ class Calculator:
         except:
             return False
 
-    def add(self, args):
-        return args[0] + args[1]
+    def add(self, op1, op2):
+        return op1 + op2
 
-    def subtract(self, args):
-        return args[0] - args[1]
+    def subtract(self, op1, op2):
+        return op1 - op2
 
-    def multiply(self, args):
-        return args[0] * args[1]
+    def multiply(self, op1, op2):
+        return op1 * op2
 
-    def divide(self, args):
-        return args[0] / args[1]
+    def divide(self, op1, op2):
+        return op1 / op2
 
     def listen(self):
         self.calculation = input('What would you like to compute?\n')
@@ -88,9 +88,6 @@ class Calculator:
         if (not c in self.operators) and (not self.is_number(c)):
             return True
 
-    def make_node_from_number(self, i):
-        return self.get_next_full_number(i)
-
     def make_node(self, operator, num, current_node):
         # 1 + 2
         # +, 2, (1,)        --> (+, (1, 2))
@@ -108,17 +105,16 @@ class Calculator:
         self.ast = current_node
         return True
 
-    def calculate(self):
-        answer = 0
-        for index, step in enumerate(self.ast):
-            if type(step) is list:
-                print('step: list', index)
-            elif step in self.operators:
-                print('step: operator', index)
-                answer = self.operators[step](self.ast[index+1])
-            elif type(step) is int:
-                print('step: int', index)
-        return answer
+    def calculate(self, node=None):
+        if not node:
+            node = self.ast
+        if type(node) is tuple:
+            operator = node[0]
+            op1 = node[1][0]
+            op2 = node[1][1]
+            return self.operators[operator](self.calculate(op1), self.calculate(op2))
+        elif type(node) is int:
+            return node
 
 if __name__ == '__main__':
     calculator = Calculator()
