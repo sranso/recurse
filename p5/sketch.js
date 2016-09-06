@@ -1,5 +1,6 @@
 var symbols = [];
-var symbolTextSize = 20;
+var symbolTextSize = 22;
+var colorFadeInterval = 8;
 
 function setup() {
   createCanvas(screen.availWidth, screen.availHeight);
@@ -8,26 +9,29 @@ function setup() {
 }
 
 function draw() {
+  background(0);
+  textSize(symbolTextSize);
+  textFont('Monaco5');
   drawSymbols();
 }
 
 function drawSymbols() {
-  background(0);
-  textSize(symbolTextSize);
-  //textFont("");
-
   symbols.forEach(function(stream, index) {
     stream.forEach(function(symbol, index) {
       fill(symbol.r, symbol.g, symbol.b);
-      text(symbol.value, symbol.x, symbol.y);
+      text(symbol.character, symbol.x, symbol.y);
       symbol.scroll();
+      symbol.maybeChangeCharacter();
+      if (symbol.y > height) {
+        symbol.y = symbol.yStart;
+      }
     });
   });
 }
 
 function makeSymbolStreams() {
   var x = 0;
-  for (var i = 0; i < height / symbolTextSize; i++) {
+  for (var i = 0; i < width / symbolTextSize; i++) {
     symbols.push(makeStream(x));
     x += symbolTextSize;
   }
@@ -36,23 +40,22 @@ function makeSymbolStreams() {
 function makeStream(x) {
   var stream = [];
   var r = 0;
-  var g = 0;
-  var b = 0;
-  var y = random(symbolTextSize * 2, symbolTextSize * 15);
-  var scrollRate = random(1, 5);
+  var g = 224;
+  var b = 80;
+  var y = random(symbolTextSize, symbolTextSize * 15);
+  var yStart = y / 2;
+  var scrollRate = random(2, 6);
   var first = true;
 
-  for (var s = 0; s < random(5, 30); s++) {
+  for (var i = 0; i < random(10, 30); i++) {
     if (first) {
-      r = g = b = 255;
+      stream.push(new Symbol(x, y, 255, 255, 255, scrollRate, yStart));
       first = false;
     } else {
-      r = 0;
-      g -= 30; // TODO optimize
-      b = 0;
+      stream.push(new Symbol(x, y, r, g, b, scrollRate, yStart));
+      g -= colorFadeInterval;
+      b -= colorFadeInterval;
     }
-    var symbol = new Symbol(x, y, r, g, b, scrollRate);
-    stream.push(symbol);
     y -= symbolTextSize;
   }
   return stream;
@@ -64,17 +67,24 @@ function getRandomKatakana() {
   );
 }
 
-function Symbol(x, y, r, g, b, scrollRate) {
-  this.value = getRandomKatakana();
+function Symbol(x, y, r, g, b, scrollRate, yStart) {
+  this.character = getRandomKatakana();
   this.x = x;
   this.y = y;
   this.r = r;
   this.g = g;
   this.b = b;
   this.scrollRate = scrollRate
+  this.yStart = yStart;
   return this;
 }
 
 Symbol.prototype.scroll = function() {
   return this.y += this.scrollRate;
+}
+
+Symbol.prototype.maybeChangeCharacter = function() {
+  if (random(0, 1) < 0.01) {
+    this.character = getRandomKatakana();
+  }
 }
