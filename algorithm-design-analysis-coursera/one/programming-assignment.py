@@ -53,14 +53,6 @@ def merge_and_count_split_inversion(b, c):
 
 # to run: python3 -m unittest <file>
 class TestCountInversions(unittest.TestCase):
-    def test_sort_and_count_vs_brute_force(self):
-        three = [2, 4, 1, 3, 5]
-        five = [1, 20, 6, 4, 5]
-        copy_three = three[:]
-        copy_five = five[:]
-        self.assertEqual(brute_force(three), sort_and_count(copy_three)[1])
-        self.assertEqual(brute_force(five), sort_and_count(copy_five)[1])
-
     @given(st.lists(st.integers()))
     def test_sort_and_count_vs_brute_force(self, array):
         copy = array[:] # in case one of our methods mutates its input array.
