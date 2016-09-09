@@ -1,9 +1,9 @@
 var symbols = [];
 var symbolTextSize = 22;
-var colorFadeInterval = 8;
+var colorFadeRate = 8;
 
 function setup() {
-  createCanvas(screen.availWidth, screen.availHeight);
+  createCanvas(window.innerWidth, window.innerHeight);
   background(0);
   makeSymbolStreams();
 }
@@ -13,20 +13,6 @@ function draw() {
   textSize(symbolTextSize);
   textFont('Monaco5');
   drawSymbols();
-}
-
-function drawSymbols() {
-  symbols.forEach(function(stream, index) {
-    stream.forEach(function(symbol, index) {
-      fill(symbol.r, symbol.g, symbol.b);
-      text(symbol.character, symbol.x, symbol.y);
-      symbol.scroll();
-      symbol.maybeChangeCharacter();
-      if (symbol.y > height) {
-        symbol.y = symbol.yStart;
-      }
-    });
-  });
 }
 
 function makeSymbolStreams() {
@@ -53,12 +39,26 @@ function makeStream(x) {
       first = false;
     } else {
       stream.push(new Symbol(x, y, r, g, b, scrollRate, yStart));
-      g -= colorFadeInterval;
-      b -= colorFadeInterval;
+      g -= colorFadeRate;
+      b -= colorFadeRate;
     }
     y -= symbolTextSize;
   }
   return stream;
+}
+
+function drawSymbols() {
+  symbols.forEach(function(stream, index) {
+    stream.forEach(function(symbol, index) {
+      fill(symbol.r, symbol.g, symbol.b);
+      text(symbol.character, symbol.x, symbol.y);
+      symbol.scroll();
+      symbol.maybeChangeCharacter();
+      if (symbol.y > height) {
+        symbol.y = symbol.yStart;
+      }
+    });
+  });
 }
 
 function getRandomKatakana() {
