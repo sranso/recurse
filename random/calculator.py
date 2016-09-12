@@ -1,5 +1,4 @@
 import sys
-import pdb
 import readline
 import unittest
 
@@ -87,11 +86,11 @@ class Calculator:
         if (not c in self.operators) and (not self.is_number(c)):
             return True
 
-    def operator_is_special(self, operator):
+    def operator_has_precedence(self, operator):
         return operator == '/' or operator == '*'
 
     def make_node(self, operator, num, current_node):
-        if not self.operator_is_special(operator) or type(current_node) == int:
+        if not self.operator_has_precedence(operator) or type(current_node) == int:
             return (operator, (current_node, num))
         else:
             return (current_node[0], (current_node[1][0], (operator, (current_node[1][1], num))))
